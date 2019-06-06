@@ -16,3 +16,5 @@ Sea que tenga un pequeño negocio y necesite sólo las funciones básicas, o una
 - calcular el precio de un producto compuesto por varios artículos y/o conceptos(estructura de costos)
 - hacer un seguimiento del estado de producción de los pedidos realizados por cada cliente
 - calcular el stock actual o a fecha de los productos fabricados
+
+
