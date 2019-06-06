@@ -2,9 +2,11 @@
 
 **gestordiez** es un software en permanente desarrollo para ayudar a las empresas u organizaciones, sean pequeñas o grandes, a acelerar su trabajo mediante la automatización de tareas. 
 
-Con demasiada frecuencia es necesario realizar tareas repetitivas y/o aburridas, como liquidar sueldos, calcular los precios de venta de un producto o realizar listas de precios, realizar ordenes de compra según los niveles de stock, calcular el precio de un producto compuesto de varios artículos, hacer un seguimiento del estado de producción de los pedidos realizados por cada cliente, etc. Los distintos módulos de **gestordiez** facilitan estas tareas. El resultado es que las personas ahorran tiempo valioso, que pueden utilizar para ocuparse de cosas más importantes relacionadas con el core de la organización, teniendo un impacto directo en la productividad y el mejor aprovechamiento de los recursos humanos y económicos. 
+Con demasiada frecuencia es necesario realizar tareas repetitivas y/o aburridas... los distintos módulos o funciones de **gestordiez** facilitan estas tareas. El resultado es que las personas ahorran tiempo valioso, que pueden utilizar para ocuparse de cosas más importantes relacionadas con el core de la organización, teniendo un impacto directo en la productividad y el mejor aprovechamiento de los recursos humanos y económicos. 
 
 Sea que tenga un pequeño negocio y necesite sólo las funciones básicas, o una empresa u organización de mayor tamaño con funciones avanzadas, gestordiez puede serle útil.
+
+como liquidar sueldos, calcular los precios de venta de un producto o realizar listas de precios, realizar ordenes de compra según los niveles de stock, calcular el precio de un producto compuesto de varios artículos, hacer un seguimiento del estado de producción de los pedidos realizados por cada cliente, etc.
 
 ### Markdown
 
