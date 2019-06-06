@@ -12,6 +12,7 @@ Sea que tenga un pequeño negocio y necesite sólo las funciones básicas, o una
 - consulta rápida de precios manualmente o mediante lector de código de barras
 - elaborar automáticamente listas de precios
 - realizar ordenes de compra según los niveles de stock
+- imprimir etiquetas con código de barras para facilitar el tracking del producto
 - calcular el precio de un producto compuesto por varios artículos y/o conceptos(estructura de costos)
 - hacer un seguimiento del estado de producción de los pedidos realizados por cada cliente
 - calcular el stock actual o a fecha de los productos fabricados
