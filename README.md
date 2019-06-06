@@ -19,4 +19,6 @@ Sea que tenga un pequeño negocio y necesite sólo las funciones básicas, o una
 
 ![pruebaimagen.jpg]({{site.baseurl}}/pruebaimagen.jpg)
 
+[click aqui para ver galeria de imagenes](/imagenes "TITULO")
+
 
