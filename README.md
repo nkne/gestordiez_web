@@ -6,7 +6,7 @@ Con demasiada frecuencia es necesario realizar tareas repetitivas y/o aburridas.
 
 Sea que tenga un pequeño negocio y necesite sólo las funciones básicas, o una empresa u organización de mayor tamaño con funciones avanzadas, **gestordiez** puede serle útil.
 
-**Algunas de funciones de gestordiez**
+**Algunas de las funciones de gestordiez**
 
 - control de stock
 - consulta rápida de precios manualmente o mediante lector de código de barras
