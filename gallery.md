@@ -30,5 +30,5 @@
 
 ## Gestordiez es un software en constante evolución. Características o funciones personalizadas pueden ser desarrolladas a la medida de su necesidad u organización
 
-**CONTACTO**
+
 ![1](c.png)
