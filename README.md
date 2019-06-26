@@ -18,7 +18,7 @@ Sea que tenga un pequeño negocio y necesite sólo las funciones básicas, o una
 - calcular el stock actual o a fecha de los productos fabricados
 - ...y muchas funciones más proximamente
 
-**[Ver galería de imágenes](gallery.md)**
+**[Ver galería de imágenes](galeria.md)**
 
 
 ![1](images/c.png)
