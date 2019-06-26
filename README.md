@@ -21,4 +21,4 @@ Sea que tenga un pequeño negocio y necesite sólo las funciones básicas, o una
 **[Ver galería de imágenes](gallery.md)**
 
 
-![1](c.png)
+![1](images/c.png)
