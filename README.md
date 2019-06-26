@@ -19,3 +19,6 @@ Sea que tenga un pequeño negocio y necesite sólo las funciones básicas, o una
 - ...y muchas funciones más proximamente
 
 **[Ver galería de imágenes](gallery.md)**
+
+
+![1](c.png)
