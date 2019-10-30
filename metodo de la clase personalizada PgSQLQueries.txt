@@ -1,0 +1,89 @@
+Public Sub SqlInsert(tabla_afectada as string, campos_separados_por_coma as string, valores_separados_por_coma as string)
+  //////////////////////////////////////////////////////////////////////////////////////////
+  'establecer los parámetros de la conexión
+  dim pg as new PostgreSQLDatabase
+  pg.SSLMode=PostgreSQLDatabase.SSLAllow
+  
+  dim variables as new vars_globales
+  pg.Host=variables.var_db_ip
+  pg.Port=val(variables.var_db_puerto)
+  pg.DatabaseName=variables.var_nombre_db
+  pg.UserName=variables.var_db_usuario
+  pg.Password=variables.var_db_password
+  //////////////////////////////////////////////////////////////////////////////////////////
+  'probar si hay conexion con la base de datos
+  If pg.Connect Then
+    HasError = false
+  Else
+    HasError = true
+    '---aqui simplemente decido cual mensaje muestro y cual no---
+    #if DebugBuild then
+      'en modo debug *siempre* muestro el mensaje de error
+      ERROR_ON_DEBUG_window.TextArea1.text = "ERROR AL CONECTAR CON LA BASE DE DATOS" + EndOfLine _
+      + "ERROR_NRO: " + cstr(pg.ErrorCode) + EndOfLine _
+      + "ERROR_MSG: " + pg.ErrorMessage
+    #else
+      'si no estoy en modo debug mostrar mensaje solo si el usuario asi lo desea
+      if ShowConnectionError = true then
+        msgbox "Error de comunicacion con la base de datos" + EndOfLine _
+        + "Puede que haya algun problema de conexión a la red o que el servidor no esté disponible temporalmente" + EndOfLine _
+        + "Tambien puede que el archivo de configuracion de ip este configurado erroneamente" + EndOfLine _
+        + "Si el problema persiste contacte al servicio de ayuda"
+      end if
+      'comento las siguientes lineas porque NO quiero que si hay un error de conexion
+      '*ademas* del error de conexion se muestre tambien el mensaje de error del usuario
+      'if ShowMyErrorMessage = true then
+      'msgbox MyMessageOnError
+      'end if
+    #Endif
+    '---fin de los mensajes a mostrar al usuario---
+    exit sub
+  End If
+  ////////////////////////////////////////////////////////////////////////////////////////
+  
+  'ejecutar la consulta deseada
+  dim sql_query as string
+  sql_query = "INSERT INTO " + tabla_afectada + " ("_
+  + campos_separados_por_coma + ") VALUES ("_
+  + valores_separados_por_coma + ")"
+  
+  pg.SQLExecute(sql_query)
+  
+  'pg.SQLExecute("INSERT INTO " + tabla_afectada + " ("_
+  '+ campos_separados_por_coma + ") VALUES ("_
+  '+ valores_separados_por_coma + ")")
+  
+  /////////////////////////////////////////////////////////////////////////////////////////
+  if pg.Error = true then
+    HasError = true
+    '---aqui simplemente decido cual mensaje muestro y cual no---
+    #if DebugBuild then
+      'en modo debug *siempre* muestro el mensaje de error
+      ERROR_ON_DEBUG_window.TextArea1.text = "ERROR AL REALIZAR LA CONSULTA SQL" + EndOfLine _
+      + "ERROR_NRO: " + cstr(pg.ErrorCode) + EndOfLine _
+      + "ERROR_MSG: " + pg.ErrorMessage + EndOfLine _
+      + "SQL ORIGINAL: " + sql_query
+    #else
+      'si no estoy en modo debug mostrar mensaje solo si el usuario asi lo desea
+      if ShowSQLError = true then
+        msgbox "Error al intentar grabar la información" + EndOfLine _
+        + "Si el problema persiste contacte al servicio de ayuda"
+      end if
+      if ShowMyErrorMessage = true then
+        msgbox MyMessageOnError
+      end if
+    #Endif
+    '---fin de los mensajes a mostrar al usuario---
+  else
+    HasError = false
+    'mostrar mensaje de exito solo si el usuario asi lo desea
+    if ShowMySuccessMessage = true then
+      msgbox MyMessageOnSuccess
+    end if
+    'mostrar mensaje generico solo su el usuario asi lo desea
+    if ShowGenericSuccessMessage = true then
+      msgbox "Registro insertado correctamente"
+    end if
+  end if
+  ///////////////////////////////////////////////////////////////////////////////////////
+End Sub
