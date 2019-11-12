@@ -1,0 +1,16 @@
+Public Function IsValidMail(direccion_de_correo as string) as boolean
+  //codigo sacado de este post--> https://forum.xojo.com/16274-check-if-string-is-an-email
+  
+  Dim re As RegEx
+  re = New RegEx
+  Dim rm As RegExMatch
+  
+  re.SearchPattern = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+  rm = re.Search(direccion_de_correo)
+  
+  if rm = Nil Then
+    return false
+  Else
+    return true
+  End if
+End Function

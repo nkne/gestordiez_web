@@ -1,0 +1,175 @@
+Public Sub HacerLogin()
+  dim id_usuario, clave_usuario, clave_encriptada as string
+  id_usuario = txt_id_usuario.text
+  clave_usuario = txt_clave_usuario.text
+  
+  dim pg as new PgSQLQueries
+  
+  'si estoy en modo debug.. simplemente ingresar SIN contraseña
+  #if DebugBuild = false then
+    
+    'realizar algunas comprobaciones iniciales
+    if len(id_usuario) < 4 then
+      msgbox("El nombre de usuario debe tener 4 caracteres al menos")
+      txt_id_usuario.SetFocus
+      exit sub
+    end if
+    
+    if len(clave_usuario) < 6 then
+      msgbox("La clave debe tener 8 caracteres al menos")
+      txt_clave_usuario.SetFocus
+      exit sub
+    end if
+    '--------
+    
+    '-----------
+    'LA CLASE FuncionesHash  Y EL ALGORITMO PARA VERIFICACION DE CONTRASEÑA
+    'HA SIDO INSPIRADA EN LA SIGUIENTE ENTRADA DE BLOG
+    'https://blog.xojo.com/2015/10/09/tips-dealing-with-the-problem-of-passwords/
+    '-----------
+    dim fh as new FuncionesHash
+    clave_encriptada = fh.Encriptar("PBKDF2",clave_usuario,"salero")
+    
+    pg.ShowConnectionError = true
+    pg.ShowSQLError = true
+    
+    
+    'paso 2--> comprobar que exista un registro con la clave y el usuario ingresado
+    '          y que no exista mas de un registro que contenga esa clave y usuario
+    dim rs as RecordSet
+    dim sql_acceso as string
+    sql_acceso = "SELECT * FROM tablas_secundarias.usuarios_del_sistema WHERE id_usuario = '" + id_usuario + "' AND clave = '" + clave_encriptada + "'"
+    
+    rs = pg.SqlSelectDirecto(sql_acceso)
+    
+    if pg.HasError = true then
+      exit sub
+    end if
+    
+    if rs.RecordCount <> 1 then
+      'autenticacion fallida. puede que haya ninguno o mas de dos registros
+      'con la misma dupla clave-usuario
+      msgbox "Acceso denegado. Alguno de los datos ingresados son incorrectos."
+      exit sub
+    else
+      'comprobar que el usuario tenga permiso de acceso
+      dim pu as new PermisosPorUsuario
+      vars_globales.var_id_usuario = id_usuario
+      if pu.UsuarioHabilitado("21",false) = false then
+        msgbox "Usuario no habilitado para ingresar al sistema"
+        exit sub
+      end if
+      
+    end if
+    
+  #else
+    
+    id_usuario = "debugbuild"
+    vars_globales.var_id_usuario = id_usuario
+    
+  #endif
+  
+  '--------------------
+  
+  'paso 3--> cargar las preferencias de la empresa para fecha
+  //y numero (ahora lo toma directamente del sistema host)
+  
+  'llenar el recordset con la consulta deseada
+  dim rs1 as RecordSet
+  dim consultaSQL as string
+  consultaSQL = "SELECT * FROM tablas_secundarias.preferencias_globales"
+  rs1=pg.SqlSelectDirecto(consultaSQL)
+  
+  '---error
+  pg.ShowMyErrorMessage = true
+  pg.MyMessageOnError = "ERROR: no es posible obtener las preferencias globales. Si el problema persiste contacte al servicio de ayuda"
+  '---mas opciones
+  pg.ShowConnectionError = true
+  pg.ShowSQLError = true
+  
+  if pg.HasError = true then
+    exit sub
+  end if
+  
+  
+  if rs1.recordCount=0 then
+    msgbox("No hay información de personalización disponible. Por favor, configure las preferencias globales.")
+    'frm_control_de_acceso.Close
+    exit sub
+  end if
+  
+  if rs1.recordCount > 1 then
+    msgbox("Se ha encontrado más de un registro de configuración global del sistema, por lo que no es posible determinar cuál usar. Por favor, contacte al servicio de ayuda.")
+    exit sub
+  end if
+  
+  dim timezone_preferido as string = rs1.field("timezone_preferido")
+  if len(trim(timezone_preferido)) = 0 then
+    msgbox "Zona horaria no establecida. Por favor, contacte al servicio de ayuda"
+    exit sub
+  else
+    vars_globales.timezone_preferido = timezone_preferido
+  end if
+  
+  dim sep as string = rs1.field("caracter_separador_de_fecha")
+  if len(trim(sep)) <> 1 then
+    msgbox "Separador de fecha no establecido o establecido incorrectamente. Por favor, contacte al servicio de ayuda"
+    exit sub
+  else
+    vars_globales.caracter_separador_de_fechas_preferido=sep
+  end if
+  
+  if len(trim(rs1.field("formato_date"))) <> 3 then
+    vars_globales.formato_date_preferido_corto = ""
+    msgbox("Formato corto de fecha no establecido, o establecido incorrectamente. Por favor, contacte al servicio de ayuda")
+    exit sub
+  end if
+  
+  vars_globales.formato_date_preferido_corto = rs1.field("formato_date")
+  
+  if rs1.field("formato_date").StringValue = "YMD" then
+    vars_globales.formato_date_preferido_largo = "YYYY" + sep + "MM" + sep + "DD"
+    vars_globales.formato_timestamp_preferido = "YYYY" + sep + "MM" + sep + "DD HH24:MI:SS"
+  end if
+  
+  if rs1.field("formato_date").StringValue = "DMY" then
+    vars_globales.formato_date_preferido_largo = "DD" + sep + "MM" + sep + "YYYY"
+    vars_globales.formato_timestamp_preferido = "DD" + sep + "MM" + sep + "YYYY HH24:MI:SS"
+  end if
+  
+  if rs1.field("formato_date").StringValue = "MDY" then
+    vars_globales.formato_date_preferido_largo = "MM" + sep + "DD" + sep + "YYYY"
+    vars_globales.formato_timestamp_preferido = "MM" + sep + "DD" + sep + "YYYY HH24:MI:SS"
+  end if
+  '---------------------------------------------------------------------------------------------------------------------------
+  
+  'paso 4--> registrar el acceso al sistema
+  
+  '---error
+  pg.ShowMyErrorMessage = true
+  pg.MyMessageOnError = "ERROR: no es posible registrar el acceso al sistema. Si el problema persiste contacte al servicio de ayuda"
+  
+  dim sql_regis_acceso as string
+  
+  sql_regis_acceso= "INSERT INTO tablas_secundarias.registro_de_operaciones_login_logout (id_usuario, tipo_de_operacion_in_out, timestamp) VALUES ( '" + id_usuario + "', 'in', CURRENT_TIMESTAMP at time zone 'utc') "
+  pg.SqlInsertDirecto(sql_regis_acceso)
+  
+  if pg.HasError = true then
+    
+    msgbox("Error al registrar el acceso al sistema. Por favor, contactese con el soporte técnico")
+    
+    #if DebugBuild then
+      msgbox(pg_con.ErrorMessage)
+    #endif
+    frm_control_de_acceso.Close
+    exit sub
+    
+  end if
+  '----------------
+  
+  app.CargarColoresYEstados
+  
+  frm_principal.Show
+  frm_principal.lbl_id_usuario.text = id_usuario
+  frm_control_de_acceso.Close
+End Sub

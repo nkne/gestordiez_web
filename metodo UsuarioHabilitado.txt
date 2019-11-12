@@ -1,0 +1,43 @@
+Public Function UsuarioHabilitado(token_funcion_deseada as string, mostrar_mensaje_al_usuario as boolean) as boolean
+  'si estoy en modo debug, directamente acceder
+  'a todas las funciones
+  #if DebugBuild then
+    return true
+    exit function
+  #endif
+  
+  token_funcion_deseada = trim(token_funcion_deseada)
+  
+  dim pg as new PgSQLQueries
+  dim sql_consulta as string
+  dim rs as recordset
+  
+  'armar la consulta sql
+  sql_consulta = SELECT id_usuario, token_funcion_del_sistema, habilitado _
+  + FROM tablas_secundarias.permisos_por_usuario WHERE _
+  + id_usuario = ' + vars_globales.var_id_usuario + ' AND _
+  + token_funcion_del_sistema =  + token_funcion_deseada +  AND _
+  + habilitado = 'true'
+  
+  pg.ShowConnectionError = true
+  pg.ShowSQLError = true
+  
+  rs = pg.SqlSelectDirecto(sql_consulta)
+  
+  'si hay un error en la consulta...
+  if pg.HasError = true then
+    return false
+    exit function
+  end if
+  
+  if rs.RecordCount = 1 then
+    'usuario habilitado
+    return true
+  else
+    'usuario NO habilitado
+    if mostrar_mensaje_al_usuario = true then
+      msgbox No tiene permiso de acceso a esta funcion del sistema
+    end if
+    return false
+  end if
+End Function
